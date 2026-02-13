@@ -18,15 +18,11 @@ Proje, Türk Hava Yolları'nın **halka açık** faaliyet ve sürdürülebilirli
 
 ### 1. Akıllı Sohbet Arayüzü (RAG Implementation)
 *Kullanıcı sorularını vektör veritabanında (ChromaDB) arayarak, ilgili PDF kesitlerinden kaynaklı cevaplar üretir. "Streaming" teknolojisi ile yanıtlar anlık akar.*
-![Chat Arayüzü](screenshots/Ekran%20görüntüsü%202026-02-14%20000453.png)
+![Chat Arayüzü](screenshots/chat_ui.png)
 
-### 2. Yönetim Paneli ve CMS
-*Sistemin arka planını yönetmek için geliştirilen şifreli panel. PDF yükleme/silme ve sistem ayarları buradan yapılır.*
-![Admin Paneli](screenshots/Ekran%20görüntüsü%202026-02-14%20000430.png)
-
-### 3. Prompt Mühendisliği ve Model Yönetimi
-*Farklı LLM modelleri ve sistem kişilikleri (System Prompts) arasında geçiş yaparak model davranışları test edilebilir.*
-![Prompt Yönetimi](screenshots/image_f4bcc3.png)
+### 2. Admin Paneli ve Model Yönetimi
+*Sistemin arka planını yönetmek için geliştirilen şifreli panel. PDF yükleme/silme işlemleri buradan yapılır ve farklı LLM modelleri ve sistem kişilikleri (System Prompts) arasında geçiş yaparak model davranışları test edilebilir.*
+![Admin Paneli](screenshots/admin_panel.png)
 
 ---
 
