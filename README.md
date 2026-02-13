@@ -73,7 +73,7 @@ Projeyi yerel makinenizde çalıştırmak için aşağıdaki adımları izleyin.
 
 Repoyu klonlayın ve proje dizinine gidin:
 ```bash
-git clone [https://github.com/kullaniciadi/thy-bot.git](https://github.com/kullaniciadi/thy-rag-bot.git)
+git clone (https://github.com/sudemkirmiz/thy-chatbot.git)
 cd thy-bot
 ```
 Sanal ortamı oluşturun ve bağımlılıkları yükleyin:
