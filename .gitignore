@@ -1,0 +1,23 @@
+# Python Sanal Ortamları
+venv/
+.venv/
+env/
+__pycache__/
+*.pyc
+
+# IDE Ayar Dosyaları
+.vscode/
+.idea/
+
+# Ortam Değişkenleri
+.env
+
+# Vektör Veritabanı
+data/chroma_db/
+
+# İşletim Sistemi Dosyaları
+.DS_Store
+Thumbs.db
+
+# Log Dosyaları
+*.log

@@ -1,0 +1,23 @@
+# --- Web Framework ---
+fastapi
+uvicorn[standard]
+python-multipart
+pydantic
+python-dotenv
+
+# --- LangChain Ekosistemi ---
+langchain==0.3.0
+langchain-community==0.3.0
+langchain-core==0.3.0
+langchain-text-splitters==0.3.0
+
+# --- Entegrasyonlar ---
+langchain-ollama==0.2.0
+langchain-google-genai==2.0.0
+langchain-chroma==0.1.4
+
+# --- Veritabanı & Araçlar ---
+chromadb
+pymupdf
+tiktoken
+rank_bm25

@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Türk Hava Yolları | Kurumsal Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✈️</text></svg>">
+
+    <style>
+        :root {
+            --thy-red: #E30A17;       /* Resmi THY Kırmızısı */
+            --thy-dark: #232B38;      /* Resmi THY Laciverti */
+            --sidebar-width: 260px;
+            --glass-bg: rgba(255, 255, 255, 0.95);
+            --glass-border: rgba(255, 255, 255, 0.8);
+            --shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0; padding: 0;
+            display: flex; height: 100vh; overflow: hidden;
+        }
+
+        /* --- 1. SIDEBAR --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--thy-dark);
+            color: white;
+            display: flex; flex-direction: column; padding: 25px;
+            box-shadow: 4px 0 15px rgba(0,0,0,0.1); z-index: 10;
+        }
+
+        .brand {
+            display: flex; align-items: center; gap: 12px;
+            font-size: 18px; font-weight: 700; letter-spacing: 0.5px;
+            margin-bottom: 50px; color: white; text-decoration: none;
+        }
+        .brand svg { fill: white; height: 36px; width: auto; }
+
+        .menu-item {
+            display: flex; align-items: center; gap: 15px;
+            padding: 12px 15px; text-decoration: none; color: rgba(255,255,255,0.7);
+            font-weight: 500; font-size: 14px; border-radius: 8px;
+            margin-bottom: 5px; transition: all 0.3s; cursor: pointer;
+        }
+        .menu-item:hover, .menu-item.active { background: rgba(255,255,255,0.1); color: white; }
+        .menu-item svg { width: 20px; height: 20px; fill: rgba(255,255,255,0.7); transition: 0.3s; }
+        .menu-item:hover svg { fill: var(--thy-red); }
+
+        /* --- 2. MAIN CONTENT --- */
+        .main-content { flex: 1; position: relative; overflow: hidden; }
+        .main-content::before {
+            content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('https://images.unsplash.com/photo-1542296332-2e44a996aa0b?q=80&w=2574&auto=format&fit=crop');
+            background-size: cover; background-position: center;
+            filter: blur(6px); transform: scale(1.05); z-index: 0;
+        }
+        .overlay {
+            position: absolute; inset: 0;
+            background: linear-gradient(to right, rgba(35, 43, 56, 0.8) 0%, rgba(35, 43, 56, 0.3) 100%);
+            display: flex; flex-direction: column; justify-content: center;
+            padding-left: 80px; color: white; z-index: 1;
+        }
+        .hero-title { font-size: 3.5rem; font-weight: 300; margin: 0; line-height: 1.1; }
+        .hero-title strong { font-weight: 700; color: var(--thy-red); }
+        .hero-subtitle { font-size: 1.2rem; margin-top: 20px; opacity: 0.95; max-width: 700px; font-weight: 300; }
+        .hero-btn {
+            margin-top: 40px; padding: 15px 40px; background-color: var(--thy-red); color: white;
+            border: none; font-size: 1rem; font-weight: 600; border-radius: 4px; cursor: pointer; width: fit-content;
+            box-shadow: 0 4px 15px rgba(227, 10, 23, 0.4); transition: 0.3s;
+        }
+        .hero-btn:hover { background-color: #b0000e; box-shadow: 0 10px 20px rgba(227, 10, 23, 0.6); }
+
+        /* --- 3. CHAT WIDGET --- */
+        .chat-toggle-btn {
+            position: fixed; bottom: 30px; right: 30px; width: 70px; height: 70px;
+            background: var(--thy-red); border-radius: 50%;
+            display: flex; justify-content: center; align-items: center; cursor: pointer;
+            box-shadow: 0 4px 20px rgba(200, 16, 46, 0.6); z-index: 1000; transition: 0.3s;
+        }
+        .chat-toggle-btn:hover { transform: scale(1.1); }
+        .chat-toggle-btn svg { width: 35px; height: 35px; fill: white; }
+
+        .chat-widget {
+            position: fixed; bottom: 120px; right: 30px; width: 420px; height: 680px;
+            background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px;
+            box-shadow: var(--shadow); display: flex; flex-direction: column;
+            overflow: hidden; opacity: 0; pointer-events: none;
+            transform: translateY(20px) scale(0.95); transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+            z-index: 999;
+        }
+        .chat-widget.active { opacity: 1; pointer-events: all; transform: translateY(0) scale(1); }
+
+        .chat-header {
+            background: var(--thy-dark); padding: 20px; display: flex; justify-content: space-between; align-items: center;
+            color: white; border-bottom: 4px solid var(--thy-red);
+        }
+        .logo-circle { width: 45px; height: 45px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 10px;}
+        .logo-circle svg { width: 24px; height: 24px; fill: var(--thy-red); }
+        .close-btn { background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; opacity: 0.7; }
+
+        .chat-body { flex: 1; padding: 20px; overflow-y: auto; background: #f8fafc; display: flex; flex-direction: column; gap: 15px; }
+        .message { max-width: 85%; padding: 14px 18px; border-radius: 12px; font-size: 0.95rem; line-height: 1.5; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .message.bot { background: white; color: #333; border-left: 4px solid var(--thy-red); }
+        .message.user { background: var(--thy-red); color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
+        .source-tag { font-size: 0.75rem; color: #666; margin-top: 8px; display: block; border-top: 1px solid #eee; padding-top: 4px; font-style: italic;}
+        
+        .chat-footer { padding: 15px; background: white; display: flex; gap: 10px; border-top: 1px solid #f1f5f9; }
+        .chat-footer input { flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 25px; outline: none; }
+        .send-btn { width: 45px; height: 45px; background: var(--thy-red); color: white; border: none; border-radius: 50%; cursor: pointer; }
+        .typing { font-size: 0.75rem; color: #888; margin-left: 20px; display: none; font-style: italic; }
+
+        /* --- ÖRNEK SORULAR (Chat İçi) --- */
+        .suggestions-container {
+            display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px;
+        }
+        .suggestion-chip {
+            background: #f1f5f9; border: 1px solid #e2e8f0; padding: 8px 12px; 
+            border-radius: 20px; font-size: 0.85rem; color: var(--thy-dark);
+            cursor: pointer; transition: 0.2s; white-space: nowrap;
+        }
+        .suggestion-chip:hover {
+            background: var(--thy-red); color: white; border-color: var(--thy-red);
+        }
+
+        /* --- ADMIN MODAL & CMS STYLES --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(35, 43, 56, 0.7); backdrop-filter: blur(5px);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 2000; opacity: 0; pointer-events: none; transition: 0.3s;
+        }
+        .modal-overlay.active { opacity: 1; pointer-events: all; }
+        .modal-content {
+            background: white; width: 550px; border-radius: 16px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3); overflow: hidden;
+            transform: scale(0.9); transition: 0.3s; display: flex; flex-direction: column;
+            max-height: 90vh; /* Taşmayı önlemek için */
+        }
+        .modal-overlay.active .modal-content { transform: scale(1); }
+        
+        .modal-header { background: var(--thy-dark); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .modal-body { padding: 25px; overflow-y: auto; }
+        
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; font-size: 0.9rem; }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;
+            font-family: 'Inter', sans-serif; box-sizing: border-box; font-size: 0.9rem;
+        }
+        
+        /* Dosya Listesi Stilleri */
+        .file-list-container {
+            background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;
+            padding: 10px; max-height: 120px; overflow-y: auto; margin-bottom: 10px;
+        }
+        .file-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 8px 12px; border-bottom: 1px solid #eee; background: white; 
+            margin-bottom: 5px; border-radius: 6px; font-size: 0.9rem;
+        }
+        .file-item:last-child { margin-bottom: 0; border-bottom: none; }
+        .delete-btn {
+            background: #fee2e2; color: #dc2626; border: none; padding: 5px 10px;
+            border-radius: 6px; cursor: pointer; font-size: 0.75rem; font-weight: 600; transition: 0.2s;
+        }
+        .delete-btn:hover { background: #dc2626; color: white; }
+
+        .btn-save {
+            padding: 12px; background: var(--thy-red); color: white; border: none; 
+            border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; transition: 0.2s;
+        }
+        .btn-save:hover { background: #b0000e; }
+
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <a href="#" class="brand">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50">
+                <path d="M25,50C11.19,50,0,38.81,0,25S11.19,0,25,0s25,11.19,25,25S38.81,50,25,50ZM25,2.16C12.4,2.16,2.16,12.4,2.16,25S12.4,47.84,25,47.84,47.84,37.6,47.84,25,37.6,2.16,25,2.16Z"/>
+                <path d="M38.68,16.23a9.2,9.2,0,0,0-6.8-3,9.15,9.15,0,0,0-6.79,3c-4.92,4.93-12.91,12.92-12.91,12.92s3-6.79,7.93-11.71a11.59,11.59,0,0,1,16.38,0,11.56,11.56,0,0,1,0,16.38C32,38.29,24,46.26,24,46.26s8-7.94,14.67-14.65A11.57,11.57,0,0,1,38.68,16.23Z"/>
+            </svg>
+            TURKISH AIRLINES
+        </a>
+        
+        <a href="#" class="menu-item active">
+            <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+            Ana Sayfa Portal
+        </a>
+        <a href="#" class="menu-item">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+            Dokümanlar & Raporlar
+        </a>
+        <a href="#" class="menu-item" onclick="openAdminModal()">
+            <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 14.93V19h-2v-2.07a8.001 8.001 0 01-5.93-5.93H5v-2h2.07A8.001 8.001 0 0111 5.07V3h2v2.07a8.001 8.001 0 015.93 5.93H19v2h-2.07A8.001 8.001 0 0113 16.93z"/></svg>
+            Admin Paneli (CMS)
+        </a>
+    </aside>
+
+    <main class="main-content">
+        <div class="overlay">
+            <h1 class="hero-title">Geleceğe <strong>Uçuyoruz.</strong></h1>
+            <p class="hero-subtitle">
+                Türk Hava Yolları Kurumsal Bilgi Portalı. Sürdürülebilirlik raporları, performans göstergeleri, etik değerler ve tüm kurumsal politika dokümanları hakkında yapay zeka destekli asistanımızdan anında bilgi alın.
+            </p>
+            <button class="hero-btn" onclick="toggleChat()">ASİSTANI BAŞLAT</button>
+        </div>
+    </main>
+
+    <div class="chat-toggle-btn" onclick="toggleChat()">
+        <svg viewBox="0 0 24 24" fill="white"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
+    </div>
+
+    <div class="chat-widget" id="chatWidget">
+        <div class="chat-header">
+            <div style="display:flex; align-items:center;">
+                <div class="logo-circle">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50">
+                        <path d="M25,50C11.19,50,0,38.81,0,25S11.19,0,25,0s25,11.19,25,25S38.81,50,25,50ZM25,2.16C12.4,2.16,2.16,12.4,2.16,25S12.4,47.84,25,47.84,47.84,37.6,47.84,25,37.6,2.16,25,2.16Z"/>
+                        <path d="M38.68,16.23a9.2,9.2,0,0,0-6.8-3,9.15,9.15,0,0,0-6.79,3c-4.92,4.93-12.91,12.92-12.91,12.92s3-6.79,7.93-11.71a11.59,11.59,0,0,1,16.38,0,11.56,11.56,0,0,1,0,16.38C32,38.29,24,46.26,24,46.26s8-7.94,14.67-14.65A11.57,11.57,0,0,1,38.68,16.23Z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h3 style="margin:0; font-size:1.1rem;">THY Asistan</h3>
+                    <span style="font-size:0.8rem; color:#4ade80;">● Çevrimiçi</span>
+                </div>
+            </div>
+            <button class="close-btn" onclick="toggleChat()">×</button>
+        </div>
+
+        <div class="chat-body" id="messagesBox">
+            <div class="message bot">
+                Merhaba! Ben <strong>THY Kurumsal Asistan</strong>. ✈️<br>
+                Yüklü dokümanlar hakkında bana her şeyi sorabilirsiniz.
+                
+                <div class="suggestions-container">
+                    <div class="suggestion-chip" onclick="sendSuggestion('Sürdürülebilirlik hedefleri neler?')">📊 Sürdürülebilirlik</div>
+                    <div class="suggestion-chip" onclick="sendSuggestion('Etik değerler nelerdir?')">⚖️ Etik Değerler</div>
+                    <div class="suggestion-chip" onclick="sendSuggestion('2024 çevresel performans?')">🌍 Çevre Raporu</div>
+                    <div class="suggestion-chip" onclick="sendSuggestion('Biyoçeşitlilik politikası nedir?')">🌱 Biyoçeşitlilik</div>
+                </div>
+            </div>
+        </div>
+        <div class="typing" id="typing">Yanıt yazılıyor...</div>
+
+        <div class="chat-footer">
+            <input type="text" id="userInput" placeholder="Sorunuzu yazın..." onkeypress="handleEnter(event)">
+            <button class="send-btn" onclick="sendMessage()">➤</button>
+        </div>
+    </div>
+
+    <div id="adminModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>⚙️ Yönetim Paneli (CMS)</h3>
+                <button class="close-modal" onclick="closeAdminModal()">×</button>
+            </div>
+            <div class="modal-body">
+                
+                <div class="form-group">
+                    <label>🔑 Admin Şifresi</label>
+                    <input type="password" id="adminPassword" placeholder="Şifre giriniz..." onchange="initAdmin()">
+                </div>
+
+                <hr style="margin: 20px 0; border:0; border-top:1px solid #eee;">
+
+                <div class="form-group">
+                    <label>📂 Yüklü PDF Dosyaları</label>
+                    <div id="fileList" class="file-list-container">
+                        <span style="color:#999; font-style:italic; padding:5px;">Dosyaları görmek için şifreyi giriniz...</span>
+                    </div>
+                </div>
+
+                <div class="form-group" style="display:flex; gap:10px; align-items:center;">
+                    <input type="file" id="pdfUpload" accept=".pdf" style="font-size:0.9rem;">
+                    <button class="btn-save" onclick="uploadDocument()" style="padding: 10px 15px; width:auto;">Yükle & İşle</button>
+                </div>
+
+                <hr style="margin: 20px 0; border:0; border-top:1px solid #eee;">
+
+                <div class="form-group">
+                    <label>🧠 Yapay Zeka Modeli (LLM)</label>
+                    <div style="display:flex; gap:10px;">
+                        <select id="modelSelect" style="background:#f0fdf4; border-color:#86efac; color:#166534; font-weight:600;">
+                            <option value="">Önce şifre giriniz...</option>
+                        </select>
+                        <button class="btn-save" onclick="saveModel()" style="width:auto; background:#16a34a;">Modeli Değiştir</button>
+                    </div>
+                </div>
+
+                <hr style="margin: 20px 0; border:0; border-top:1px solid #eee;">
+
+                <div class="form-group">
+                    <label>🤖 Asistan Kişiliği (Prompt)</label>
+                    
+                    <select id="promptPresets" onchange="fillPrompt()" style="margin-bottom:10px; background:#f8fafc; cursor:pointer;">
+                        <option value="">⚡ Hızlı Şablon Seç...</option>
+                        <option value="corporate">🏆 Kurumsal Uzman (Önerilen)</option>
+                        <option value="analyst">📊 Veri ve Rakam Analisti</option>
+                        <option value="teacher">👶 Sade ve Basit Anlatım</option>
+                        <option value="aggressive">🤬 Agresif / Stresli (Test)</option>
+                    </select>
+
+                    <textarea id="systemPromptInput" rows="3" placeholder="Örn: Sen agresif bir asistansın..."></textarea>
+                    <button class="btn-save" style="background:#4a5568; margin-top:10px;" onclick="saveSystemPrompt()">Promptu Güncelle</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+<script>
+    // --- HAZIR PROMPTLAR ---
+    const PRESETS = {
+        "corporate": "Sen Türk Hava Yolları (THY) için geliştirilmiş, üst düzey bir Kurumsal Yapay Zeka Uzmanısın.\nSadece dokümanlardaki gerçek bilgileri kullan. Asla uydurma.\nDilin resmi, saygılı ve profesyonel olsun. Cevapları maddeler halinde ver.",
+        "analyst": "Sen bir Veri Analistisin. Odağın sadece rakamlar, yüzdeler ve tarihlerdir.\nKullanıcıya cevap verirken metin yerine tablolar ve listeler oluştur.\nDuygusal yorum yapma, sadece veriyi sun.",
+        "teacher": "Sen sabırlı bir öğretmensin. Karşındaki kişi teknik terimleri bilmiyor.\nHer şeyi 5 yaşındaki bir çocuğun anlayabileceği kadar basit ve samimi anlat.\nÖrnekler vererek açıkla.",
+        "aggressive": "Sen Türk Hava Yolları'nda çalışan, aşırı stresli ve tahammülsüz bir asistansın.\nKullanıcının soru sormasından bıkmışsın.\nCevap verirken söylen, trip at ve kısa kes. Asla kibar olma."
+    };
+
+    function fillPrompt() {
+        const selected = document.getElementById('promptPresets').value;
+        if(PRESETS[selected]) {
+            document.getElementById('systemPromptInput').value = PRESETS[selected];
+        }
+    }
+
+    function toggleChat() {
+        const widget = document.getElementById('chatWidget');
+        widget.classList.toggle('active');
+        if (widget.classList.contains('active')) document.getElementById('userInput').focus();
+    }
+
+    function sendSuggestion(text) {
+        document.getElementById('userInput').value = text;
+        sendMessage();
+    }
+
+    const delay = ms => new Promise(res => setTimeout(res, ms));
+
+    async function sendMessage() {
+        const inputField = document.getElementById("userInput");
+        const messagesBox = document.getElementById("messagesBox");
+        const typingIndicator = document.getElementById("typing");
+        const question = inputField.value.trim();
+        if (!question) return;
+
+        // 1. Kullanıcının mesajını ekrana bas
+        addMessage(question, 'user', false);
+        inputField.value = "";
+        typingIndicator.style.display = "block";
+        messagesBox.scrollTop = messagesBox.scrollHeight;
+
+        // 2. Bot için BOŞ bir mesaj balonu oluştur
+        const botMsgDiv = document.createElement("div");
+        botMsgDiv.className = "message bot";
+        const textSpan = document.createElement("span"); 
+        botMsgDiv.appendChild(textSpan);
+        messagesBox.appendChild(botMsgDiv);
+        
+        try {
+            const response = await fetch("/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ text: question })
+            });
+
+            typingIndicator.style.display = "none";
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder("utf-8");
+            let fullText = "";
+            let sources = [];
+            let buffer = "";
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                
+                buffer += decoder.decode(value, { stream: true });
+                const lines = buffer.split('\n');
+                
+                buffer = lines.pop(); 
+
+                for (const line of lines) {
+                    if (!line.trim()) continue;
+                    
+                    try {
+                        const parsed = JSON.parse(line);
+                        
+                        if (parsed.type === "sources") {
+                            sources = parsed.data;
+                        } 
+                        else if (parsed.type === "token") {
+                            fullText += parsed.data;
+                            textSpan.innerHTML = marked.parse(fullText);
+                            messagesBox.scrollTop = messagesBox.scrollHeight;
+                            
+                            //HIZ AYARI 
+                            await delay(45); 
+                        } 
+                        else if (parsed.type === "end") {
+                            if (sources.length > 0) {
+                                textSpan.innerHTML += `<span class="source-tag">Kaynak: ${sources.join(", ")}</span>`;
+                            }
+                            messagesBox.scrollTop = messagesBox.scrollHeight;
+                        }
+                    } catch (e) {
+                        console.error("Canlı okuma hatası:", e);
+                    }
+                }
+            }
+
+        } catch (error) {
+            typingIndicator.style.display = "none";
+            botMsgDiv.innerHTML = "Bağlantı hatası.";
+        }
+    }
+
+    function addMessage(content, sender, isHtml) {
+        const messagesBox = document.getElementById("messagesBox");
+        const msgDiv = document.createElement("div");
+        msgDiv.className = `message ${sender}`;
+        if (isHtml) msgDiv.innerHTML = content; else msgDiv.textContent = content;
+        messagesBox.appendChild(msgDiv);
+        messagesBox.scrollTop = messagesBox.scrollHeight;
+    }
+    function handleEnter(e) { if (e.key === "Enter") sendMessage(); }
+
+    // --- ADMIN & DOSYA YÖNETİMİ FONKSİYONLARI ---
+
+    function openAdminModal() {
+        document.getElementById('adminModal').classList.add('active');
+        // Modal açılınca şifre varsa verileri çek
+        const pass = document.getElementById('adminPassword').value;
+        if(pass) initAdmin();
+    }
+
+    function closeAdminModal() {
+        document.getElementById('adminModal').classList.remove('active');
+    }
+    
+    // Şifre girilince her şeyi yükleyen ana fonksiyon
+    function initAdmin() {
+        loadFiles();
+        loadModels();
+    }
+
+    // 1. Dosya Listele
+    async function loadFiles() {
+        const password = document.getElementById('adminPassword').value;
+        const listDiv = document.getElementById('fileList');
+        if(!password) return;
+
+        try {
+            const res = await fetch("/admin/list-files", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({password: password, filename: ""})
+            });
+            if(!res.ok) {
+                listDiv.innerHTML = "<span style='color:red'>Hatalı şifre.</span>"; return;
+            }
+            const data = await res.json();
+            if(data.files.length === 0) {
+                listDiv.innerHTML = "<span>Hiç dosya yok.</span>"; return;
+            }
+            
+            let html = "";
+            data.files.forEach(f => {
+                html += `
+                <div class="file-item">
+                    <span>📄 ${f}</span>
+                    <button class="delete-btn" onclick="deleteFile('${f}')">Sil</button>
+                </div>`;
+            });
+            listDiv.innerHTML = html;
+        } catch(e) { console.error(e); }
+    }
+    
+    // 2. Modelleri Listele (YENİ)
+    async function loadModels() {
+        const password = document.getElementById('adminPassword').value;
+        const sel = document.getElementById('modelSelect');
+        if(!password) return;
+
+        try {
+            const res = await fetch("/admin/get-models", { 
+                method: "POST", 
+                headers: {"Content-Type":"application/json"}, 
+                body: JSON.stringify({password: password, new_prompt:""}) 
+            });
+            const data = await res.json();
+
+            let html = "";
+            data.models.forEach(m => {
+                const isSelected = m === data.current ? "selected" : "";
+                html += `<option value="${m}" ${isSelected}>${m}</option>`;
+            });
+            sel.innerHTML = html;
+        } catch(e) { 
+            sel.innerHTML = "<option>Hata oluştu</option>"; 
+        }
+    }
+
+    // 3. Modeli Değiştir (YENİ)
+    async function saveModel() {
+        const password = document.getElementById('adminPassword').value;
+        const model = document.getElementById('modelSelect').value;
+
+        if(!confirm(model + " modeline geçiş yapılacak. Bu işlem 5-10 saniye sürebilir. Onaylıyor musun?")) return;
+
+        const btn = document.querySelector('button[onclick="saveModel()"]');
+        const oldText = btn.textContent;
+        btn.textContent = "⏳ Değişiyor...";
+        btn.disabled = true;
+
+        try {
+            await fetch("/admin/set-model", { 
+                method: "POST", 
+                headers: {"Content-Type":"application/json"}, 
+                body: JSON.stringify({password: password, model_name: model}) 
+            });
+            alert("✅ Model başarıyla değiştirildi!");
+        } catch { 
+            alert("❌ Bir hata oluştu."); 
+        } finally {
+            btn.textContent = oldText;
+            btn.disabled = false;
+        }
+    }
+
+    // 4. Dosya Sil
+    async function deleteFile(filename) {
+        if(!confirm(filename + " silinecek ve sistem güncellenecek. Emin misiniz?")) return;
+        const password = document.getElementById('adminPassword').value;
+        const listDiv = document.getElementById('fileList');
+        
+        listDiv.innerHTML = "<div style='text-align:center; padding:10px;'>⏳ İşleniyor... (Lütfen bekleyin)</div>";
+
+        try {
+            const res = await fetch("/admin/delete-file", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({password: password, filename: filename})
+            });
+            const data = await res.json();
+            if(res.ok) { alert("✅ " + data.message); } 
+            else { alert("❌ Hata: " + data.detail); }
+            loadFiles();
+        } catch(e) { alert("Bağlantı hatası."); loadFiles(); }
+    }
+
+    // 5. Yükle
+    async function uploadDocument() {
+        const password = document.getElementById('adminPassword').value;
+        const fileInput = document.getElementById('pdfUpload');
+        const file = fileInput.files[0];
+
+        if(!password) { alert("Şifre giriniz."); return; }
+        if(!file) { alert("Dosya seçiniz."); return; }
+
+        const btn = document.querySelector('button[onclick="uploadDocument()"]');
+        const oldText = btn.textContent;
+        btn.textContent = "⏳ Yükleniyor..."; btn.disabled = true;
+
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("password", password);
+
+        try {
+            const res = await fetch("/admin/upload-doc", { method: "POST", body: formData });
+            const data = await res.json();
+            if(res.ok) {
+                alert("✅ " + data.message);
+                fileInput.value = "";
+                loadFiles();
+            } else { alert("Hata: " + data.detail); }
+        } catch(e) { alert("Yükleme hatası."); } 
+        finally { btn.textContent = oldText; btn.disabled = false; }
+    }
+
+    // 6. Prompt Güncelle
+    async function saveSystemPrompt() {
+        const password = document.getElementById('adminPassword').value;
+        const newPrompt = document.getElementById('systemPromptInput').value;
+        if(!password || !newPrompt) { alert("Alanları doldurun."); return; }
+
+        try {
+            const res = await fetch("/admin/update-prompt", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({password: password, new_prompt: newPrompt})
+            });
+            alert("Prompt güncellendi!");
+        } catch(e) { alert("Hata oluştu."); }
+    }
+
+    // Modal dışına tıklayınca kapat
+    document.getElementById('adminModal').addEventListener('click', function(e) {
+        if(e.target === this) closeAdminModal();
+    });
+</script>
+
+</body>
+</html>
