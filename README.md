@@ -53,7 +53,7 @@ Sistem, tek bir sağlayıcıya bağlı kalmadan farklı modelleri test etmek iç
 
 | Katman | Teknoloji | Kullanım Amacı |
 | :--- | :--- | :--- |
-| **Backend** | Python 3.12, FastAPI | Asenkron API sunucusu ve Request yönetimi. |
+| **Backend** | Python 3.12, FastAPI, Uvicorn | Asenkron API yönetimi ve yüksek performanslı ASGI sunucusu. |
 | **LLM Framework** | LangChain 0.3 | Zincir (Chain) yapıları ve Prompt yönetimi. |
 | **Vector DB** | ChromaDB | Embeddinglerin saklandığı yerel veritabanı. |
 | **PDF Engine** | PyMuPDF (Fitz) | Yüksek başarımlı doküman okuma (Parsing). |
