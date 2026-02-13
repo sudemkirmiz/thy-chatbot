@@ -12,8 +12,9 @@ __pycache__/
 # Ortam Değişkenleri
 .env
 
-# Vektör Veritabanı
-data/chroma_db/
+# Vektör Veritabanı ve Kaynak Veriler (Tam klasörleri engelliyoruz)
+vector_db/
+data/
 
 # İşletim Sistemi Dosyaları
 .DS_Store
